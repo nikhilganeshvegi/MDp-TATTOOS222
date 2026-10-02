@@ -21,6 +21,7 @@ export const BookingPage = ({
   bookingError,
   onBookSlot,
   serverStatus,
+  isBookingEnabled = true,
 }) => {
   return (
     <div className="page-root booking-page">
@@ -75,6 +76,7 @@ export const BookingPage = ({
           bookingError={bookingError}
           onBookSlot={onBookSlot}
           serverStatus={serverStatus}
+          isBookingEnabled={isBookingEnabled}
         />
       </div>
     </div>

@@ -4,10 +4,14 @@ import {
   getSlots,
   createAppointment,
   getAppointmentById,
-  getAllAppointments
+  getAllAppointments,
+  getPublicBookingStatus
 } from '../controllers/appointmentController.js';
 
 const router = express.Router();
+
+// Public booking intake status
+router.get('/booking-status', getPublicBookingStatus);
 
 // Tattoo types catalog
 router.get('/tattoo-types', getTattooTypes);

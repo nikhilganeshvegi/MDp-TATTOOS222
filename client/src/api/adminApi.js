@@ -115,3 +115,45 @@ export const clearStoredAdminSession = () => {
     console.warn('[Admin Auth] Failed to clear session:', err);
   }
 };
+
+/**
+ * Fetch booking intake status (Admin)
+ */
+export const fetchAdminBookingStatus = async () => {
+  const token = getStoredAdminToken();
+  const response = await fetch(`${API_BASE}/admin/booking-status`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  const data = await parseResponseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.message || 'Failed to fetch admin booking status.');
+  }
+
+  return data;
+};
+
+/**
+ * Update booking intake status (Admin)
+ */
+export const updateAdminBookingStatus = async (isEnabled) => {
+  const token = getStoredAdminToken();
+  const response = await fetch(`${API_BASE}/admin/booking-status`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ isEnabled: Boolean(isEnabled) })
+  });
+
+  const data = await parseResponseJson(response);
+  if (!response.ok) {
+    throw new Error(data?.message || 'Failed to update booking status.');
+  }
+
+  return data;
+};

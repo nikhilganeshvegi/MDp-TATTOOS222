@@ -10,6 +10,7 @@ import {
   isWeekend,
   parseLocalDate
 } from '../utils/timeUtils.js';
+import { getBookingStatus } from '../services/settingService.js';
 
 /**
  * GET /api/tattoo-types
@@ -24,6 +25,26 @@ const executeWithBookingLock = (fn) => {
       .then(() => fn().then(resolve).catch(reject))
       .catch(() => fn().then(resolve).catch(reject));
   });
+};
+
+/**
+ * GET /api/booking-status
+ * Public endpoint to check if online booking intake is enabled
+ */
+export const getPublicBookingStatus = async (req, res) => {
+  try {
+    const isEnabled = await getBookingStatus();
+    return res.status(200).json({
+      success: true,
+      isEnabled
+    });
+  } catch (error) {
+    console.error('Error fetching public booking status:', error);
+    return res.status(200).json({
+      success: true,
+      isEnabled: true
+    });
+  }
 };
 
 /**
@@ -53,6 +74,24 @@ export const getTattooTypes = async (req, res) => {
 export const getSlots = async (req, res) => {
   try {
     const { date, tattooType, duration } = req.query;
+
+    // Check if appointments intake is enabled
+    const isBookingEnabled = await getBookingStatus();
+    if (!isBookingEnabled) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          date: date || '',
+          tattooType: tattooType || '',
+          durationHours: 1,
+          slots: [],
+          totalSlots: 0,
+          availableSlotsCount: 0,
+          isBookingEnabled: false,
+          message: 'Appointments are currently closed.'
+        }
+      });
+    }
 
     if (!date) {
       return res.status(400).json({
@@ -165,6 +204,16 @@ export const createAppointment = async (req, res) => {
         tattooType,
         startTime
       } = req.body;
+
+      // ── 0. Enforce global booking intake status ───────────────────────────
+      const isBookingEnabled = await getBookingStatus();
+      if (!isBookingEnabled) {
+        return res.status(403).json({
+          success: false,
+          error: 'Appointments are currently closed. New bookings cannot be accepted at this time.',
+          message: 'Appointments are currently closed. New bookings cannot be accepted at this time.'
+        });
+      }
 
       // ── 1. Required-field validation ──────────────────────────────────────
       if (!customerName || typeof customerName !== 'string' || !customerName.trim()) {

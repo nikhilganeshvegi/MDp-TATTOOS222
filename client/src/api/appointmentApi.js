@@ -95,3 +95,17 @@ export const checkServerHealth = async () => {
     return { status: 'OFFLINE', databaseConnected: false };
   }
 };
+
+/**
+ * Check if appointment intake is currently enabled
+ */
+export const fetchPublicBookingStatus = async () => {
+  try {
+    const res = await fetch(`${API_BASE}/booking-status`);
+    const data = await parseResponseJson(res);
+    return data?.isEnabled !== undefined ? Boolean(data.isEnabled) : true;
+  } catch (err) {
+    console.warn('[Booking API] Failed to fetch booking status:', err);
+    return true; // Default safe fallback
+  }
+};

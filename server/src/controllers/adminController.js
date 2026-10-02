@@ -114,3 +114,80 @@ export const adminVerify = (req, res) => {
     }
   });
 };
+
+import { getBookingStatus, setBookingStatus } from '../services/settingService.js';
+
+/**
+ * Middleware: Verify Admin Authentication from Bearer token
+ */
+export const requireAdminAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized: Admin authentication required.'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  const payload = verifyTokenString(token);
+
+  if (!payload) {
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized: Session has expired or is invalid.'
+    });
+  }
+
+  req.admin = payload;
+  next();
+};
+
+/**
+ * GET /api/admin/booking-status
+ * Authenticated admin endpoint to retrieve booking availability
+ */
+export const getAdminBookingStatus = async (req, res) => {
+  try {
+    const isEnabled = await getBookingStatus();
+    return res.status(200).json({
+      success: true,
+      isEnabled
+    });
+  } catch (error) {
+    console.error('[Admin] Error reading booking status:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve booking status.'
+    });
+  }
+};
+
+/**
+ * POST /api/admin/booking-status
+ * Authenticated admin endpoint to toggle booking availability
+ */
+export const updateAdminBookingStatus = async (req, res) => {
+  try {
+    const { isEnabled } = req.body || {};
+    if (typeof isEnabled !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'Field "isEnabled" (boolean) is required in request body.'
+      });
+    }
+
+    const updated = await setBookingStatus(isEnabled);
+    return res.status(200).json({
+      success: true,
+      isEnabled: updated,
+      message: updated ? 'Bookings are now ENABLED.' : 'Bookings are now DISABLED.'
+    });
+  } catch (error) {
+    console.error('[Admin] Error updating booking status:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update booking status.'
+    });
+  }
+};

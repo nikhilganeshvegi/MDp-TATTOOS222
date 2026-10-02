@@ -18,6 +18,8 @@ import { BookingPage }          from './pages/BookingPage.jsx';
 import { AdminAuthProvider }    from './context/AdminAuthContext.jsx';
 import { AdminLoginPage }       from './pages/admin/AdminLoginPage.jsx';
 import { AdminDashboardPage }   from './pages/admin/AdminDashboardPage.jsx';
+import { AdminTodayAppointmentsPage } from './pages/admin/AdminTodayAppointmentsPage.jsx';
+import { AdminUpcomingAppointmentsPage } from './pages/admin/AdminUpcomingAppointmentsPage.jsx';
 import { AdminProtectedRoute }  from './components/admin/AdminProtectedRoute.jsx';
 
 // ── Existing Booking Modals (Unchanged) ────────────────────────────────────
@@ -30,6 +32,7 @@ import {
   fetchAvailableSlots,
   bookAppointment,
   checkServerHealth,
+  fetchPublicBookingStatus,
 } from './api/appointmentApi.js';
 import { TATTOO_CATALOG } from './constants/tattooCatalog.js';
 
@@ -72,26 +75,55 @@ export default function App() {
   // ── 6. Server / DB health ────────────────────────────────────────────────
   const [serverStatus, setServerStatus] = useState({ connected: false, checked: false });
 
-  // ── Init: health check + catalog load ───────────────────────────────────
+  // ── 7. Master Booking Availability (Live sync with Admin Toggle) ───────────
+  const [isBookingEnabled, setIsBookingEnabled] = useState(true);
+
+  // ── Init: health check + catalog load + booking status sync ───────────────
   useEffect(() => {
+    let mounted = true;
     const init = async () => {
       try {
         const health = await checkServerHealth();
-        setServerStatus({
-          connected: health.status === 'OK',
-          databaseConnected: health.databaseConnected,
-          checked: true,
-        });
+        if (mounted) {
+          setServerStatus({
+            connected: health.status === 'OK',
+            databaseConnected: health.databaseConnected,
+            checked: true,
+          });
+        }
         const backendCatalog = await fetchTattooTypes();
-        if (backendCatalog && backendCatalog.length > 0) {
+        if (mounted && backendCatalog && backendCatalog.length > 0) {
           setCatalog(backendCatalog);
         }
       } catch (err) {
         console.warn('Server check:', err);
-        setServerStatus({ connected: false, checked: true });
+        if (mounted) setServerStatus({ connected: false, checked: true });
       }
     };
     init();
+
+    // Check booking availability and keep fresh
+    const loadBookingStatus = async () => {
+      try {
+        const enabled = await fetchPublicBookingStatus();
+        if (mounted && typeof enabled === 'boolean') {
+          setIsBookingEnabled(enabled);
+        }
+      } catch (err) {
+        console.warn('Booking status fetch:', err);
+      }
+    };
+    loadBookingStatus();
+
+    const interval = setInterval(loadBookingStatus, 8000);
+    const onFocus = () => loadBookingStatus();
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
   }, []);
 
   // ── Fetch slots on date / tattoo change ──────────────────────────────────
@@ -154,6 +186,11 @@ export default function App() {
   const handleInitiateBooking = () => {
     setBookingError(null);
     setConfirmError(null);
+
+    if (!isBookingEnabled) {
+      setBookingError('Online appointment bookings are currently closed.');
+      return;
+    }
 
     if (!validateForm()) {
       document.getElementById('appointment')?.scrollIntoView({ behavior: 'smooth' });
@@ -322,6 +359,7 @@ Duration: ${durationText}`;
           confirmedAppointment={confirmedAppointment}
           setConfirmedAppointment={setConfirmedAppointment}
           handleReset={handleReset}
+          isBookingEnabled={isBookingEnabled}
         />
       </AdminAuthProvider>
     </BrowserRouter>
@@ -354,7 +392,8 @@ function AppContent({
   confirmError,
   confirmedAppointment,
   setConfirmedAppointment,
-  handleReset
+  handleReset,
+  isBookingEnabled,
 }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -404,6 +443,7 @@ function AppContent({
                 bookingError={bookingError}
                 onBookSlot={handleInitiateBooking}
                 serverStatus={serverStatus}
+                isBookingEnabled={isBookingEnabled}
               />
             }
           />
@@ -417,6 +457,22 @@ function AppContent({
             element={
               <AdminProtectedRoute>
                 <AdminDashboardPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/today"
+            element={
+              <AdminProtectedRoute>
+                <AdminTodayAppointmentsPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/upcoming"
+            element={
+              <AdminProtectedRoute>
+                <AdminUpcomingAppointmentsPage />
               </AdminProtectedRoute>
             }
           />
