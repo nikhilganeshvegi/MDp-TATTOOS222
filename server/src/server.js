@@ -91,8 +91,7 @@ const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
       console.log(`[Server] Tattoo Appointment Server running on port ${PORT}`);
-      console.log(`[Server] Studio hours: 9:00 AM – 9:00 PM (Mon–Fri)`);
-      console.log(`[Server] Lunch break: 12:00 PM – 1:00 PM`);
+      console.log(`[Server] Studio hours: 9:00 AM – 9:00 PM (Monday – Sunday, Open 7 Days, Continuous Sessions)`);
     });
   } catch (err) {
     console.error('[Server Startup Warning]', err.message);

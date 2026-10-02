@@ -157,3 +157,49 @@ export const updateAdminBookingStatus = async (isEnabled) => {
 
   return data;
 };
+
+/**
+ * Fetch Today's Appointments (Admin, Protected)
+ */
+export const fetchTodayAppointments = async () => {
+  const token = getStoredAdminToken();
+  const response = await fetch(`${API_BASE}/admin/appointments/today`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  const data = await parseResponseJson(response);
+  if (!response.ok) {
+    const errorMsg = data?.message || data?.error || 'Failed to retrieve today\'s appointments.';
+    const error = new Error(errorMsg);
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+};
+
+/**
+ * Fetch Upcoming Appointments (Admin, Protected)
+ */
+export const fetchUpcomingAppointments = async () => {
+  const token = getStoredAdminToken();
+  const response = await fetch(`${API_BASE}/admin/appointments/upcoming`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  const data = await parseResponseJson(response);
+  if (!response.ok) {
+    const errorMsg = data?.message || data?.error || 'Unable to load upcoming appointments.';
+    const error = new Error(errorMsg);
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+};

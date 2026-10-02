@@ -1,13 +1,49 @@
 // Time calculation and interval overlap utilities
 
 /**
- * Converts "HH:mm" (24-hour) string to minutes from midnight
- * e.g., "09:00" -> 540, "13:30" -> 810
+ * Converts "HH:mm" (24-hour) or "h:mm A" (12-hour) string to minutes from midnight
+ * e.g., "09:00" -> 540, "13:30" -> 810, "2:00 PM" -> 840, "10:00 AM" -> 600
  */
 export const timeToMinutes = (timeStr) => {
   if (!timeStr || typeof timeStr !== 'string') return 0;
+  const is12Hour = /am|pm/i.test(timeStr);
+  if (is12Hour) {
+    const isPM = /pm/i.test(timeStr);
+    const cleaned = timeStr.replace(/[^0-9:]/g, '');
+    const [rawH, rawM = 0] = cleaned.split(':').map(Number);
+    let h = rawH;
+    if (isPM && h < 12) h += 12;
+    if (!isPM && h === 12) h = 0;
+    return (h || 0) * 60 + (rawM || 0);
+  }
   const [hours, minutes] = timeStr.split(':').map(Number);
-  return hours * 60 + minutes;
+  return (hours || 0) * 60 + (minutes || 0);
+};
+
+/**
+ * Returns today's calendar date string "YYYY-MM-DD" strictly in Asia/Kolkata (IST)
+ */
+export const getTodayDateInKolkata = (dateObj = new Date()) => {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(dateObj);
+};
+
+/**
+ * Returns today's formatted display string in Asia/Kolkata (IST)
+ * e.g., "Saturday, October 3, 2026"
+ */
+export const formatTodayDisplayInKolkata = (dateObj = new Date()) => {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(dateObj);
 };
 
 /**
@@ -60,13 +96,11 @@ export const parseLocalDate = (dateStr) => {
 };
 
 /**
- * Checks if a given YYYY-MM-DD falls on Saturday (6) or Sunday (0)
+ * Checks if a given YYYY-MM-DD is a closed day.
+ * Always returns false as the studio is now open all 7 days (Monday to Sunday).
  */
 export const isWeekend = (dateStr) => {
-  const date = parseLocalDate(dateStr);
-  if (!date) return false;
-  const day = date.getDay();
-  return day === 0 || day === 6; // Sunday or Saturday
+  return false;
 };
 
 /**

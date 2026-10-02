@@ -21,21 +21,10 @@ export const checkSlotAvailability = async ({
   durationHours,
   excludeAppointmentId = null
 }) => {
-  // 1. Weekend check
-  if (isWeekend(appointmentDate)) {
-    return {
-      available: false,
-      reason: 'SHOP_CLOSED_WEEKEND',
-      message: 'The studio is closed on Saturdays and Sundays.'
-    };
-  }
-
   const startMin = timeToMinutes(startTime);
   const endMin = timeToMinutes(endTime);
   const openMin = timeToMinutes(SHOP_RULES.OPENING_TIME);   // 09:00 (540)
   const closeMin = timeToMinutes(SHOP_RULES.CLOSING_TIME); // 21:00 (1260)
-  const breakStartMin = timeToMinutes(SHOP_RULES.BREAK_START); // 12:00 (720)
-  const breakEndMin = timeToMinutes(SHOP_RULES.BREAK_END);     // 13:00 (780)
 
   // 2. Shop opening hours check
   if (startMin < openMin) {
@@ -54,26 +43,25 @@ export const checkSlotAvailability = async ({
     };
   }
 
-  // 3. Break time overlap check (12:00 PM - 1:00 PM)
-  if (intervalsOverlap(startMin, endMin, breakStartMin, breakEndMin)) {
-    return {
-      available: false,
-      reason: 'OVERLAPS_BREAK',
-      message: `Appointment overlaps the artist's break time (${formatDisplayTime(SHOP_RULES.BREAK_START)} – ${formatDisplayTime(SHOP_RULES.BREAK_END)}).`
-    };
-  }
+  // 4. Past time check if date is today in Asia/Kolkata
+  const kolkataDateStr = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
 
-  // 4. Past time check if date is today
-  const targetDate = parseLocalDate(appointmentDate);
-  const now = new Date();
-  const isToday =
-    targetDate &&
-    targetDate.getFullYear() === now.getFullYear() &&
-    targetDate.getMonth() === now.getMonth() &&
-    targetDate.getDate() === now.getDate();
-
+  const isToday = appointmentDate === kolkataDateStr;
   if (isToday) {
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const kolkataTimeStr = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(new Date());
+    const [kh, km] = kolkataTimeStr.split(':').map(Number);
+    const currentMinutes = kh * 60 + km;
+
     if (startMin <= currentMinutes) {
       return {
         available: false,
@@ -121,17 +109,6 @@ export const checkSlotAvailability = async ({
  * along with their availability status and conflict reasons.
  */
 export const getAvailableSlotsForDate = async (appointmentDate, durationHours) => {
-  // Check if weekend
-  if (isWeekend(appointmentDate)) {
-    return {
-      date: appointmentDate,
-      isWeekend: true,
-      durationHours,
-      slots: [],
-      message: 'The studio is closed on Saturdays and Sundays. Please select a weekday (Monday to Friday).'
-    };
-  }
-
   const openMin = timeToMinutes(SHOP_RULES.OPENING_TIME);   // 540 (09:00)
   const closeMin = timeToMinutes(SHOP_RULES.CLOSING_TIME); // 1260 (21:00)
   const stepMin = SHOP_RULES.SLOT_INTERVAL_MINUTES;        // 60 minutes
@@ -142,17 +119,26 @@ export const getAvailableSlotsForDate = async (appointmentDate, durationHours) =
     status: 'CONFIRMED'
   }).lean();
 
-  const breakStartMin = timeToMinutes(SHOP_RULES.BREAK_START);
-  const breakEndMin = timeToMinutes(SHOP_RULES.BREAK_END);
+  // Determine if appointmentDate is today in Asia/Kolkata (IST)
+  const kolkataDateStr = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
 
-  const targetDate = parseLocalDate(appointmentDate);
-  const now = new Date();
-  const isToday =
-    targetDate &&
-    targetDate.getFullYear() === now.getFullYear() &&
-    targetDate.getMonth() === now.getMonth() &&
-    targetDate.getDate() === now.getDate();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const isToday = appointmentDate === kolkataDateStr;
+  let currentMinutes = 0;
+  if (isToday) {
+    const kolkataTimeStr = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(new Date());
+    const [kh, km] = kolkataTimeStr.split(':').map(Number);
+    currentMinutes = kh * 60 + km;
+  }
 
   const slots = [];
 
@@ -177,12 +163,6 @@ export const getAvailableSlotsForDate = async (appointmentDate, durationHours) =
       isAvailable = false;
       conflictReason = 'EXCEEDS_CLOSING_TIME';
       message = `Session of ${durationHours}h exceeds closing time (${formatDisplayTime(SHOP_RULES.CLOSING_TIME)})`;
-    }
-    // Check lunch break collision
-    else if (intervalsOverlap(start, end, breakStartMin, breakEndMin)) {
-      isAvailable = false;
-      conflictReason = 'OVERLAPS_BREAK';
-      message = `Session overlaps lunch break (${formatDisplayTime(SHOP_RULES.BREAK_START)} – ${formatDisplayTime(SHOP_RULES.BREAK_END)})`;
     }
     // Check existing confirmed appointment collision
     else {

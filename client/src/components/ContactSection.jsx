@@ -39,10 +39,10 @@ export const ContactSection = () => {
             <div className="contact-block">
               <p className="contact-block-label">Studio Hours</p>
               <div className="contact-hours-grid">
-                <span className="hours-day">Monday – Friday</span>
+                <span className="hours-day">Monday – Sunday</span>
                 <span className="hours-time">9:00 AM – 9:00 PM</span>
-                <span className="hours-day">Saturday – Sunday</span>
-                <span className="hours-time">Closed</span>
+                <span className="hours-day">Appointments</span>
+                <span className="hours-time">Open 7 Days</span>
               </div>
             </div>
 

@@ -2,55 +2,48 @@ import React from 'react';
 import { Calendar, AlertCircle, Info } from 'lucide-react';
 
 export const DatePicker = ({ selectedDate, onDateChange, error }) => {
-  // Format today's date as YYYY-MM-DD for min attribute
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const minDate = `${year}-${month}-${day}`;
-
-  // Helper to test if a date string is Saturday or Sunday
-  const isWeekend = (dateStr) => {
-    if (!dateStr) return false;
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    const dayOfWeek = date.getDay();
-    return dayOfWeek === 0 || dayOfWeek === 6; // 0=Sun, 6=Sat
-  };
+  // Format today's date as YYYY-MM-DD in Asia/Kolkata (IST) for min attribute
+  const minDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
 
   const handleInputChange = (e) => {
     const val = e.target.value;
-    if (isWeekend(val)) {
-      onDateChange(val, 'Saturdays and Sundays are holidays. The studio is open Monday to Friday.');
+    if (val && val < minDate) {
+      onDateChange(val, 'Please select today or a future appointment date.');
       return;
     }
     onDateChange(val, null);
   };
 
-  // Generate shortcut buttons for upcoming weekdays
-  const getUpcomingWeekdays = (count = 5) => {
+  // Generate shortcut buttons for upcoming days (all 7 days of the week, starting from today)
+  const getUpcomingDays = (count = 7) => {
     const dates = [];
-    let current = new Date();
-    // Start from today or tomorrow
-    let checked = 0;
-    while (dates.length < count && checked < 14) {
-      const d = new Date(current);
-      d.setDate(d.getDate() + checked);
-      const dayOfWeek = d.getDay();
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const dt = String(d.getDate()).padStart(2, '0');
-        const dateStr = `${y}-${m}-${dt}`;
-        const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        dates.push({ dateStr, dayLabel });
-      }
-      checked++;
+    const now = new Date();
+    for (let i = 0; i < count; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + i);
+      const dateStr = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(d);
+      const dayLabel = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kolkata',
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      }).format(d);
+      dates.push({ dateStr, dayLabel });
     }
     return dates;
   };
 
-  const quickDates = getUpcomingWeekdays(5);
+  const quickDates = getUpcomingDays(7);
 
   return (
     <div className="section-card">
@@ -59,7 +52,7 @@ export const DatePicker = ({ selectedDate, onDateChange, error }) => {
         <div>
           <h3 className="section-title">Select Appointment Date</h3>
           <p className="section-subtitle">
-            Studio is open <strong>Monday to Friday</strong> (Saturday & Sunday are closed)
+            Studio is open <strong>every day</strong> (Monday to Sunday, 9 AM – 9 PM)
           </p>
         </div>
       </div>
@@ -85,7 +78,7 @@ export const DatePicker = ({ selectedDate, onDateChange, error }) => {
 
         {/* Quick select buttons */}
         <div className="quick-dates-container">
-          <span className="quick-label">Upcoming Weekdays:</span>
+          <span className="quick-label">Upcoming Days:</span>
           <div className="quick-buttons-row">
             {quickDates.map((item) => (
               <button
@@ -109,7 +102,7 @@ export const DatePicker = ({ selectedDate, onDateChange, error }) => {
       ) : (
         <div className="alert-box alert-info">
           <Info size={16} />
-          <span>Working hours: 9:00 AM – 9:00 PM | Artist break: 12:00 PM – 1:00 PM</span>
+          <span>Working hours: 9:00 AM – 9:00 PM (Monday to Sunday) | Continuous booking slots available</span>
         </div>
       )}
     </div>

@@ -1470,3 +1470,372 @@
   color: #06070a;
 }
 
+/* ── 7. TODAY'S APPOINTMENTS LIST ────────────────────────────────────────── */
+.today-appointment-list {
+  display: flex;
+  flex-direction: column;
+  divide-y: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.today-appointment-card {
+  padding: 1.5rem 1.75rem;
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: #0f131a;
+  transition: background 0.2s;
+}
+
+.today-appointment-card:last-child {
+  border-bottom: none;
+}
+
+.today-appointment-card:hover {
+  background: rgba(197, 168, 128, 0.03);
+}
+
+/* Time Block */
+.tac-time-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tac-time-range {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.tac-time-arrow {
+  color: var(--accent-bronze, #c5a880);
+  font-size: 0.85rem;
+}
+
+.tac-duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--accent-bronze, #c5a880);
+  background: rgba(197, 168, 128, 0.08);
+  border: 1px solid rgba(197, 168, 128, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+/* Main Details Block */
+.tac-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.tac-customer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tac-customer-name {
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.tac-meta-pill {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.tac-tattoo-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+
+.tac-tattoo-name {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Actions / Contact Strip */
+.tac-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.tac-phone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.tac-phone-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.tac-wa-relay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 4px;
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.tac-wa-relay-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #6ee7b7;
+}
+
+.tac-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.tac-status-tag.confirmed {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+/* Loading & Error States */
+.admin-loading-center {
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.admin-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--accent-bronze, #c5a880);
+  color: #06070a;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.75rem;
+}
+
+.admin-retry-btn:hover {
+  background: #d6be99;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .today-appointment-card {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+    padding: 1.25rem 1.25rem;
+  }
+
+  .tac-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+/* ── 8. UPCOMING APPOINTMENTS HIERARCHY ─────────────────────────────── */
+.upcoming-schedule-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.upcoming-year-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.upcoming-year-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--accent-bronze, #c5a880);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(197, 168, 128, 0.25);
+  text-transform: uppercase;
+}
+
+.upcoming-year-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(197, 168, 128, 0.12);
+  border: 1px solid rgba(197, 168, 128, 0.3);
+  color: var(--accent-bronze-light, #e0cfb8);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.upcoming-month-block {
+  background: #0f131a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.upcoming-month-header {
+  background: linear-gradient(90deg, rgba(197, 168, 128, 0.14) 0%, rgba(15, 19, 26, 0.95) 100%);
+  border-bottom: 1px solid rgba(197, 168, 128, 0.2);
+  padding: 1rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upcoming-month-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.upcoming-month-count-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-bronze, #c5a880);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid rgba(197, 168, 128, 0.25);
+  text-transform: uppercase;
+}
+
+.upcoming-day-block {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.upcoming-day-block:last-child {
+  border-bottom: none;
+}
+
+.upcoming-day-header {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0.85rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upcoming-day-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.upcoming-day-pill {
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #f1f5f9;
+}
+
+.upcoming-day-weekday {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.upcoming-day-count {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.upcoming-day-appointments {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .upcoming-month-header {
+    padding: 0.9rem 1.25rem;
+  }
+  .upcoming-day-header {
+    padding: 0.75rem 1.25rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+}
+
+
+

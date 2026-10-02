@@ -27,7 +27,7 @@ export const FooterSection = () => {
                 <ShieldCheck size={12} className="gold-icon" /> Sterile Medical Protocol
               </span>
               <span className="footer-meta-pill">
-                <Clock size={12} className="gold-icon" /> Mon–Fri Only
+                <Clock size={12} className="gold-icon" /> Open 7 Days
               </span>
             </div>
           </div>
@@ -50,12 +50,12 @@ export const FooterSection = () => {
             <p className="footer-col-heading">Operating Hours</p>
             <div className="footer-hours-block">
               <div className="footer-hours-row">
-                <span className="f-day">Monday – Friday</span>
+                <span className="f-day">Monday – Sunday</span>
                 <span className="f-time">9:00 AM – 9:00 PM</span>
               </div>
-              <div className="footer-hours-row closed">
-                <span className="f-day">Saturday – Sunday</span>
-                <span className="f-time">Closed (Holidays)</span>
+              <div className="footer-hours-row">
+                <span className="f-day">Studio Availability</span>
+                <span className="f-time">Open Every Day</span>
               </div>
             </div>
             <p className="footer-notice-sub">

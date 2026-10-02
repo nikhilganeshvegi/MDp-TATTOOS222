@@ -103,8 +103,8 @@ export const AboutPage = () => {
                 </div>
                 <div className="stat-card-row">
                   <div className="stat-box">
-                    <span className="sb-num">Mon–Fri</span>
-                    <span className="sb-label">Working Days</span>
+                    <span className="sb-num">Mon–Sun</span>
+                    <span className="sb-label">Open 7 Days</span>
                   </div>
                   <div className="stat-box">
                     <span className="sb-num">9 AM–9 PM</span>

@@ -43,7 +43,7 @@ export const BookingSection = ({
           <p className="booking-section-intro">
             Availability is calculated in real time based on confirmed bookings.
             Select your date and style, then choose an open slot. All sessions are
-            Monday to Friday, 9 AM – 9 PM.
+            Monday to Sunday, 9 AM – 9 PM.
           </p>
         </div>
 

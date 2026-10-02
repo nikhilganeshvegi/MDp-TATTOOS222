@@ -118,14 +118,6 @@ export const getSlots = async (req, res) => {
       });
     }
 
-    if (isWeekend(date)) {
-      return res.status(400).json({
-        success: false,
-        error: 'The studio is closed on Saturdays and Sundays. Please select a weekday (Monday to Friday).',
-        message: 'The studio is closed on Saturdays and Sundays. Please select a weekday (Monday to Friday).'
-      });
-    }
-
     // Determine duration and validate tattooType
     let durationHours = 1;
     let matchedTattoo = null;
@@ -263,14 +255,6 @@ export const createAppointment = async (req, res) => {
           success: false,
           error: 'appointmentDate is not a valid calendar date.',
           message: 'appointmentDate is not a valid calendar date.'
-        });
-      }
-
-      if (isWeekend(appointmentDate)) {
-        return res.status(400).json({
-          success: false,
-          error: 'Appointments are available Monday to Friday only. The studio is closed on weekends.',
-          message: 'Appointments are available Monday to Friday only. The studio is closed on weekends.'
         });
       }
 

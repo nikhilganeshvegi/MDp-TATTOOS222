@@ -50,7 +50,7 @@ export const HeroSection = ({ onBookClick }) => {
           {/* Eyebrow */}
           <p className="hero-eyebrow animate-fade-up delay-1">
             <span className="eyebrow-dot" />
-            Private Practice · Mon–Fri · By Appointment Only
+            Private Practice · Open 7 Days · By Appointment Only
           </p>
 
           {/* Main Headline */}
@@ -108,7 +108,7 @@ export const HeroSection = ({ onBookClick }) => {
 
       {/* ── Bottom Info Strip ── */}
       <div className="hero-info-strip">
-        <span>MON – FRI</span>
+        <span>MON – SUN</span>
         <span className="strip-sep">◆</span>
         <span>9:00 AM – 9:00 PM</span>
         <span className="strip-sep">◆</span>

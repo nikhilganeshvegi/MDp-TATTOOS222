@@ -66,16 +66,12 @@ export const ContactPage = () => {
                 <div className="cic-card-body">
                   <div className="hours-table">
                     <div className="hours-row">
-                      <span className="hr-day">Monday – Friday</span>
+                      <span className="hr-day">Monday – Sunday</span>
                       <span className="hr-val">9:00 AM – 9:00 PM</span>
                     </div>
                     <div className="hours-row highlight-row">
-                      <span className="hr-day">Artist Lunch Break</span>
-                      <span className="hr-val">12:00 PM – 1:00 PM (No Bookings)</span>
-                    </div>
-                    <div className="hours-row closed-row">
-                      <span className="hr-day">Saturday &amp; Sunday</span>
-                      <span className="hr-val">Closed (Studio Holidays)</span>
+                      <span className="hr-day">Appointment Availability</span>
+                      <span className="hr-val">Open 7 Days (Continuous Sessions)</span>
                     </div>
                   </div>
                 </div>

@@ -197,7 +197,7 @@ export default function App() {
       return;
     }
     if (!selectedDate || dateError) {
-      setBookingError('Please choose a valid weekday appointment date.');
+      setBookingError('Please choose a valid appointment date.');
       return;
     }
     if (!selectedTattoo) {

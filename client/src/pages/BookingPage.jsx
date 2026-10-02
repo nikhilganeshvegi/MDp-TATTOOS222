@@ -34,14 +34,14 @@ export const BookingPage = ({
             <span className="gold-text">Private Session.</span>
           </h1>
           <p className="page-lead">
-            Select your preferred style and weekday date to calculate live hourly availability.
+            Select your preferred style and date to calculate live hourly availability.
             Once selected, clicking Book Appointment presents your session summary to send directly to the artist's WhatsApp.
           </p>
 
           <div className="booking-info-pills">
             <div className="bip-item">
               <Clock size={14} className="gold-icon" />
-              <span>Mon–Fri (9:00 AM – 9:00 PM)</span>
+              <span>Mon–Sun (9:00 AM – 9:00 PM)</span>
             </div>
             <div className="bip-item">
               <ShieldCheck size={14} className="gold-icon" />

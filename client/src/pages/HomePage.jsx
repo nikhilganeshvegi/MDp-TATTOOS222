@@ -113,14 +113,14 @@ export const HomePage = () => {
             </div>
             <h2 className="hbb-heading">Reserve Your Session</h2>
             <p className="hbb-sub">
-              20 curated styles · weekday hourly slots · instant WhatsApp confirmation.
+              20 curated styles · 7 days a week · instant WhatsApp confirmation.
               No double-bookings. No walk-ins.
             </p>
           </div>
           <div className="hbb-right">
             <div className="hbb-meta">
               <Clock size={14} className="gold-icon" aria-hidden="true" />
-              <span>Mon–Fri · 9 AM – 9 PM · By Appointment Only</span>
+              <span>Mon–Sun · 9 AM – 9 PM · By Appointment Only</span>
             </div>
             <Link to="/book" className="btn-primary-hero hbb-cta">
               <Calendar size={15} aria-hidden="true" />
@@ -355,7 +355,7 @@ export const HomePage = () => {
           <h2 className="hfc-heading">Book Your Next Tattoo</h2>
           <p className="hfc-sub">
             Real-time availability. Confirmed into our database. Sent directly to the artist's WhatsApp.
-            Weekdays only — reserve now while slots are open.
+            Open 7 days a week — reserve now while slots are open.
           </p>
           <div className="hfc-actions">
             <Link to="/book" className="btn-primary-hero hfc-btn">
@@ -369,7 +369,7 @@ export const HomePage = () => {
           </div>
           <p className="hfc-note">
             <Clock size={12} aria-hidden="true" />
-            Monday–Friday · 9 AM–9 PM · No walk-ins
+            Monday–Sunday · 9 AM–9 PM · No walk-ins
           </p>
         </div>
       </section>

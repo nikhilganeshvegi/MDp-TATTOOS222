@@ -232,7 +232,7 @@ export const AdminDashboardPage = () => {
           </div>
           <div className="aqc-content">
             <h3 className="aqc-title">Upcoming Appointments</h3>
-            <p className="aqc-desc">View advance weekday booking schedule and client appointments.</p>
+            <p className="aqc-desc">View advance 7-day booking schedule and client appointments.</p>
           </div>
           <span className="aqc-arrow">→</span>
         </Link>

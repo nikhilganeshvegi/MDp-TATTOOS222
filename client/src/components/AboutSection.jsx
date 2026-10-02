@@ -75,8 +75,8 @@ export const AboutSection = () => {
             </div>
             <div className="about-stat-divider" />
             <div className="about-stat">
-              <span className="stat-num">Mon–Fri</span>
-              <span className="stat-label">Operating Days</span>
+              <span className="stat-num">7 Days</span>
+              <span className="stat-label">Open Mon–Sun</span>
             </div>
             <div className="about-stat-divider" />
             <div className="about-stat">
