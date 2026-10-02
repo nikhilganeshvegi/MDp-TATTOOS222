@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
 import appointmentRoutes from './routes/appointmentRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -62,6 +63,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Mount Routes
+app.use('/api/admin', adminRoutes);
 app.use('/api', appointmentRoutes);
 
 // Catch-all 404 handler

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // ── Shared UI components ───────────────────────────────────────────────────
 import { ScrollToTop }          from './components/ScrollToTop.jsx';
@@ -13,6 +13,12 @@ import { TattooStylesPage }     from './pages/TattooStylesPage.jsx';
 import { ServicesPage }         from './pages/ServicesPage.jsx';
 import { ContactPage }          from './pages/ContactPage.jsx';
 import { BookingPage }          from './pages/BookingPage.jsx';
+
+// ── Admin Pages & Guard ────────────────────────────────────────────────────
+import { AdminAuthProvider }    from './context/AdminAuthContext.jsx';
+import { AdminLoginPage }       from './pages/admin/AdminLoginPage.jsx';
+import { AdminDashboardPage }   from './pages/admin/AdminDashboardPage.jsx';
+import { AdminProtectedRoute }  from './components/admin/AdminProtectedRoute.jsx';
 
 // ── Existing Booking Modals (Unchanged) ────────────────────────────────────
 import { BookingConfirmModal } from './components/BookingConfirmModal.jsx';
@@ -29,6 +35,7 @@ import { TATTOO_CATALOG } from './constants/tattooCatalog.js';
 
 import './App.css';
 import './premium.css';
+import './admin.css';
 
 export default function App() {
   // ── 1. Customer form state ──────────────────────────────────────────────
@@ -283,88 +290,166 @@ Duration: ${durationText}`;
     setPendingBookingData(null);
   };
 
-  // ── Render with BrowserRouter & Multi-Page Layout ────────────────────────
+  // ── Render with BrowserRouter, AdminAuthProvider & Multi-Page Layout ─────
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <div className="site-root">
-
-        {/* Global Navbar */}
-        <Navbar />
-
-        {/* Multi-Page Routes */}
-        <main className="main-content-area">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route
-              path="/tattoo-styles"
-              element={
-                <TattooStylesPage
-                  catalog={catalog}
-                  onSelectTattoo={setSelectedTattoo}
-                />
-              }
-            />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route
-              path="/book"
-              element={
-                <BookingPage
-                  formData={formData}
-                  onInputChange={handleInputChange}
-                  formErrors={formErrors}
-                  selectedDate={selectedDate}
-                  onDateChange={handleDateChange}
-                  dateError={dateError}
-                  catalog={catalog}
-                  selectedTattoo={selectedTattoo}
-                  onSelectTattoo={setSelectedTattoo}
-                  slots={slots}
-                  selectedSlot={selectedSlot}
-                  onSelectSlot={setSelectedSlot}
-                  loadingSlots={loadingSlots}
-                  slotsError={slotsError}
-                  isSubmitting={isSubmitting}
-                  bookingError={bookingError}
-                  onBookSlot={handleInitiateBooking}
-                  serverStatus={serverStatus}
-                />
-              }
-            />
-            {/* Alias /appointment to /book */}
-            <Route path="/appointment" element={<Navigate to="/book" replace />} />
-            {/* Catch-all redirect to Home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-
-        {/* Global Footer */}
-        <FooterSection />
-
-        {/* Step 4b — Confirmation step modal ("Do you really want to book this appointment?") */}
-        {showConfirmModal && pendingBookingData && (
-          <BookingConfirmModal
-            isOpen={showConfirmModal}
-            appointmentData={pendingBookingData}
-            onConfirm={handleConfirmAndSendToWhatsApp}
-            onCancel={handleCancelConfirm}
-            isSubmitting={isSubmitting}
-            error={confirmError}
-          />
-        )}
-
-        {/* Booking confirmation receipt modal (after successful MongoDB save & WhatsApp open) */}
-        {confirmedAppointment && (
-          <BookingConfirmationModal
-            appointment={confirmedAppointment}
-            onClose={() => setConfirmedAppointment(null)}
-            onReset={handleReset}
-          />
-        )}
-
-      </div>
+      <AdminAuthProvider>
+        <ScrollToTop />
+        <AppContent
+          formData={formData}
+          handleInputChange={handleInputChange}
+          formErrors={formErrors}
+          selectedDate={selectedDate}
+          handleDateChange={handleDateChange}
+          dateError={dateError}
+          catalog={catalog}
+          selectedTattoo={selectedTattoo}
+          setSelectedTattoo={setSelectedTattoo}
+          slots={slots}
+          selectedSlot={selectedSlot}
+          setSelectedSlot={setSelectedSlot}
+          loadingSlots={loadingSlots}
+          slotsError={slotsError}
+          isSubmitting={isSubmitting}
+          bookingError={bookingError}
+          handleInitiateBooking={handleInitiateBooking}
+          serverStatus={serverStatus}
+          showConfirmModal={showConfirmModal}
+          pendingBookingData={pendingBookingData}
+          handleConfirmAndSendToWhatsApp={handleConfirmAndSendToWhatsApp}
+          handleCancelConfirm={handleCancelConfirm}
+          confirmError={confirmError}
+          confirmedAppointment={confirmedAppointment}
+          setConfirmedAppointment={setConfirmedAppointment}
+          handleReset={handleReset}
+        />
+      </AdminAuthProvider>
     </BrowserRouter>
+  );
+}
+
+function AppContent({
+  formData,
+  handleInputChange,
+  formErrors,
+  selectedDate,
+  handleDateChange,
+  dateError,
+  catalog,
+  selectedTattoo,
+  setSelectedTattoo,
+  slots,
+  selectedSlot,
+  setSelectedSlot,
+  loadingSlots,
+  slotsError,
+  isSubmitting,
+  bookingError,
+  handleInitiateBooking,
+  serverStatus,
+  showConfirmModal,
+  pendingBookingData,
+  handleConfirmAndSendToWhatsApp,
+  handleCancelConfirm,
+  confirmError,
+  confirmedAppointment,
+  setConfirmedAppointment,
+  handleReset
+}) {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  return (
+    <div className={`site-root ${isAdminRoute ? 'is-admin-mode' : ''}`}>
+
+      {/* Global Navbar — Public pages only */}
+      {!isAdminRoute && <Navbar />}
+
+      {/* Multi-Page Routes */}
+      <main className={isAdminRoute ? 'admin-main-viewport' : 'main-content-area'}>
+        <Routes>
+          {/* Public Website Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route
+            path="/tattoo-styles"
+            element={
+              <TattooStylesPage
+                catalog={catalog}
+                onSelectTattoo={setSelectedTattoo}
+              />
+            }
+          />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route
+            path="/book"
+            element={
+              <BookingPage
+                formData={formData}
+                onInputChange={handleInputChange}
+                formErrors={formErrors}
+                selectedDate={selectedDate}
+                onDateChange={handleDateChange}
+                dateError={dateError}
+                catalog={catalog}
+                selectedTattoo={selectedTattoo}
+                onSelectTattoo={setSelectedTattoo}
+                slots={slots}
+                selectedSlot={selectedSlot}
+                onSelectSlot={setSelectedSlot}
+                loadingSlots={loadingSlots}
+                slotsError={slotsError}
+                isSubmitting={isSubmitting}
+                bookingError={bookingError}
+                onBookSlot={handleInitiateBooking}
+                serverStatus={serverStatus}
+              />
+            }
+          />
+          {/* Alias /appointment to /book */}
+          <Route path="/appointment" element={<Navigate to="/book" replace />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLoginPage />} />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboardPage />
+              </AdminProtectedRoute>
+            }
+          />
+
+          {/* Catch-all redirect to Home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
+      {/* Global Footer — Public pages only */}
+      {!isAdminRoute && <FooterSection />}
+
+      {/* Step 4b — Confirmation step modal ("Do you really want to book this appointment?") */}
+      {showConfirmModal && pendingBookingData && (
+        <BookingConfirmModal
+          isOpen={showConfirmModal}
+          appointmentData={pendingBookingData}
+          onConfirm={handleConfirmAndSendToWhatsApp}
+          onCancel={handleCancelConfirm}
+          isSubmitting={isSubmitting}
+          error={confirmError}
+        />
+      )}
+
+      {/* Booking confirmation receipt modal (after successful MongoDB save & WhatsApp open) */}
+      {confirmedAppointment && (
+        <BookingConfirmationModal
+          appointment={confirmedAppointment}
+          onClose={() => setConfirmedAppointment(null)}
+          onReset={handleReset}
+        />
+      )}
+
+    </div>
   );
 }
